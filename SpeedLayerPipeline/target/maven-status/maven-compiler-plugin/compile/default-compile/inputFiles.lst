@@ -1,0 +1,4 @@
+/home/k2/KafkaSparkConnection/kafkaProdCon/src/main/java/kafkaDemo/kafkaProdCon/SimpleStringProducer.java
+/home/k2/KafkaSparkConnection/kafkaProdCon/src/main/java/kafkaDemo/kafkaProdCon/SimpleAvroProducer.java
+/home/k2/KafkaSparkConnection/kafkaProdCon/src/main/java/kafkaDemo/kafkaProdCon/SimpleStringConsumer.java
+/home/k2/KafkaSparkConnection/kafkaProdCon/src/main/java/kafkaDemo/kafkaProdCon/SparkStringConsumer.java
