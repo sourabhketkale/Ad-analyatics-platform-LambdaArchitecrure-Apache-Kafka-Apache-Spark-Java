@@ -1,8 +1,6 @@
 package com.producer.pojo;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Iterator;
+import com.google.common.primitives.UnsignedBytes;
 
 /*
  * CSV structure:
@@ -14,11 +12,31 @@ import java.util.Iterator;
 
 public class CampiagnData {
 	
+	
 	private int adType, demographicsAgeMin, demographicsAgeMax ;
 	String demographicsCity, demographicsGender;
-	long campaignId;
+	long  campaignId;
 	int  adCost, adCpm, adBudget, adImpressions, adClicks, adViews;
+
 	
+
+	 
+	public CampiagnData(long campaignId, int adType, int adCost, int adCpm, int adViews, int adImpressions, int adClicks, int adBudget, int demographicsAgeMax, int demographicsAgeMin,  String demographicsCity,
+			String demographicsGender){
+
+		this.adType = adType;
+		this.demographicsAgeMin = demographicsAgeMin;
+		this.demographicsAgeMax = demographicsAgeMax;
+		this.demographicsCity = demographicsCity;
+		this.demographicsGender = demographicsGender;
+		this.campaignId = campaignId;
+		this.adCost = adCost;
+		this.adCpm = adCpm;
+		this.adBudget = adBudget;
+		this.adImpressions = adImpressions;
+		this.adClicks = adClicks;
+		this.adViews = adViews;
+	}
 	
 	@Override
 	public String toString() {

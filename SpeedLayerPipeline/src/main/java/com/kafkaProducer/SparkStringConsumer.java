@@ -36,11 +36,28 @@ public class SparkStringConsumer {
 	            + "  { \"name\":\"city\", \"type\":\"string\" },"
 	            + "  { \"name\":\"adCampaign\", \"type\":\"string\" }"
 	            + "]}";
+	  public static final String CAMPAIGN_SCHEMA = "{"
+	            + "\"type\":\"record\","
+	            + "\"name\":\"campaign\","
+	            + "\"fields\":["
+	            + "  { \"name\":\"campaignId\", \"type\":\"int\" },"
+	            + "  { \"name\":\"adCost\", \"type\":\"int\" },"
+	            + "  { \"name\":\"adCpm\", \"type\":\"int\" },"
+	            + "  { \"name\":\"adBudget\", \"type\":\"int\" },"
+	            + "  { \"name\":\"adBudget\", \"type\":\"int\" },"
+	            + "  { \"name\":\"adImpressions\", \"type\":\"int\" },"
+	            + "  { \"name\":\"adClicks\", \"type\":\"int\" },"
+	            + "  { \"name\":\"adViews\", \"type\":\"int\" },"
+	            + "  { \"name\":\"demographicsCity\", \"type\":\"string\" },"
+	            + "  { \"name\":\"demographicsAgeMax\", \"type\":\"int\" },"
+	            + "  { \"name\":\"demographicsAgeMin\", \"type\":\"int\" },"
+	            + "  { \"name\":\"demographicsGender\", \"type\":\"string\" }"
+	            + "]}";
 	    
 
 	    static {
 	        Schema.Parser parser = new Schema.Parser();
-	        Schema schema = parser.parse(PRODUCTDETAILS_SCHEMA);
+	        Schema schema = parser.parse(CAMPAIGN_SCHEMA);
 	        recordInjection = GenericAvroCodecs.toBinary(schema);
 	    }
 
@@ -57,7 +74,7 @@ public class SparkStringConsumer {
 	       
 	        
 	        
-	        Set<String> topics = Collections.singleton("test_kafka_queue");
+	        Set<String> topics = Collections.singleton("campaignData_kafka_queue");
 	        Map<String, String> kafkaParams = new HashMap<>();
 	        kafkaParams.put("metadata.broker.list", "localhost:9092");
 
@@ -68,13 +85,19 @@ public class SparkStringConsumer {
 	                .map(message -> recordInjection.invert(message._2).get())
 	                .foreachRDD(rdd -> {
 	                    rdd.foreach(record -> {
-	                    	System.out.println("Product id:"+record.get("productID"));
-	                    	System.out.print("Company id:"+record.get("companyID"));
-	                    	System.out.print("minAge:"+record.get("minAge"));
-	                    	System.out.print("maxAge:"+record.get("maxAge"));
-	                    	System.out.print("gender:"+record.get("gender"));
-	                    	System.out.print("city:"+record.get("city"));
-	                    	System.out.print("adCampaign:"+record.get("adCampaign"));
+	                    	System.out.println("campaign id:"+record.get("campaignID"));
+	                    	System.out.print("adType:"+record.get("adType"));
+	                    	System.out.print("adCost:"+record.get("adCost"));
+	                    	System.out.print("adCpm:"+record.get("adCpm"));
+	                    	System.out.print("adBudget:"+record.get("adBudget"));
+	                    	System.out.print("adImpressions:"+record.get("adImpressions"));
+	                    	System.out.print("adClicks:"+record.get("adClicks"));
+	                    	System.out.print("adViews:"+record.get("adViews"));
+	                    	System.out.print("demographicsCity:"+record.get("demographicsCity"));
+	                    	System.out.print("demographicsGender:"+record.get("demographicsGender"));
+	                    	System.out.print("demographicsAgeMin:"+record.get("demographicsAgeMin"));
+	                    	System.out.print("demographicsAgeMax:"+record.get("demographicsAgeMax"));
+	                    	
 	                    	});
 	                });
 

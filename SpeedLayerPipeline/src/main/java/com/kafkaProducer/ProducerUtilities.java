@@ -1,7 +1,6 @@
 package com.kafkaProducer;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,24 +8,22 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.apache.spark.api.r.SerializationFormats;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
-import com.fasterxml.jackson.databind.SerializationFeature;
+import com.producer.pojo.CampiagnData;
 import com.producer.pojo.ProductDetails;
-
-import scala.util.parsing.json.JSONArray;
 
 public class ProducerUtilities {
 
-	public static final String USER_SCHEMA = "{" + "\"type\":\"record\"," + "\"name\":\"productdetails\","
+	public static final String PRODUCTDETAILS_SCHEMA = "{" + "\"type\":\"record\"," + "\"name\":\"productdetails\","
 			+ "\"fields\":[" + "  { \"name\":\"productID\", \"type\":\"int\" },"
 			+ "  { \"name\":\"companyID\", \"type\":\"int\" }," + "  { \"name\":\"minAge\", \"type\":\"int\" },"
 			+ "  { \"name\":\"maxAge\", \"type\":\"int\" }," + "  { \"name\":\"gender\", \"type\":\"string\" },"
 			+ "  { \"name\":\"city\", \"type\":\"string\" }," + "  { \"name\":\"adCampaign\", \"type\":\"string\" }"
 			+ "]}";
+	
 
 	/**
 	 * @author Sourabh Ketkale
@@ -45,7 +42,6 @@ public class ProducerUtilities {
 			while ((line = reader.readLine()) != null) {
 
 				String[] ProductDetail = line.split(csvSplitBy);
-				// System.out.println("\n1:ProductId:"+ProductDetail[0]+"\t2:CompanyId:"+ProductDetail[1]+"\t3:minAge:"+ProductDetail[2]+"\t4:maxAge:"+ProductDetail[3]+"\t5:Gender:"+ProductDetail[4]+"\t6:City:"+ProductDetail[5]+"\t7:AdCampign:"+ProductDetail[6]);
 			}
 
 		} catch (IOException e) {
@@ -53,24 +49,38 @@ public class ProducerUtilities {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
-	 * 
-	 * @author Sourabh Ketkale
-	 * @function: Csv file listiner to the a CSV dump directory
-	 * 
-	 * */
-	public ArrayList<String> csvFileListenier(String directoryPath){
+	 * @function: Convert CSV data from campiagnData to JSON array
+	 * 	//campiagnID, adtype, adcost, AdCpm, AdViews, AdImpressions,AdClicks,AdBudget, DemographicsAgeMax, DemographicsAgeMin, DemographicsGender,  DemographicsCity
+	 */  
+	public List<CampiagnData> csvToJsonForCampaignData()
+			throws JsonGenerationException, JsonMappingException, IOException {
 		
-		
-		ArrayList<String> filePaths = new ArrayList<String>();
-		
-		String dirPath =  "/home/k2/Downloads/csvDump";
-		//File file = new 
-		
-		return filePaths;
-		
-		
+		String filePath = "//home//k2//data//campaignData.csv";
+		Pattern pattern = Pattern.compile(",");
+		List<CampiagnData> campiagnDataList = new ArrayList<>();
+		try (BufferedReader in = new BufferedReader(new FileReader(filePath));) {
+			campiagnDataList = in.lines().skip(1).map(line -> {
+				String[] campiagnDataRecord = pattern.split(line);
+				
+				return new CampiagnData(Long.parseLong(campiagnDataRecord[0].substring(1, campiagnDataRecord[0].length()-2)),
+						Integer.parseInt(campiagnDataRecord[1].substring(1, campiagnDataRecord[1].length()-1)), 
+						Integer.parseInt(campiagnDataRecord[2].substring(1, campiagnDataRecord[2].length()-1)),
+						Integer.parseInt(campiagnDataRecord[3].substring(1, campiagnDataRecord[3].length()-1)), 
+						Integer.parseInt(campiagnDataRecord[4].substring(1, campiagnDataRecord[4].length()-1)), 
+						Integer.parseInt(campiagnDataRecord[5].substring(1, campiagnDataRecord[5].length()-1)),
+						Integer.parseInt(campiagnDataRecord[6].substring(1, campiagnDataRecord[6].length()-1)),
+						Integer.parseInt(campiagnDataRecord[7].substring(1, campiagnDataRecord[7].length()-1)),
+						Integer.parseInt(campiagnDataRecord[8].substring(1, campiagnDataRecord[8].length()-1)),
+						Integer.parseInt(campiagnDataRecord[9].substring(1, campiagnDataRecord[9].length()-1)),
+						campiagnDataRecord[10].substring(1, campiagnDataRecord[10].length()-1), 
+						campiagnDataRecord[11].substring(1, campiagnDataRecord[11].length()-1));
+			}).collect(Collectors.toList());
+			ObjectMapper mapper = new ObjectMapper();
+			mapper.writeValue(System.out, campiagnDataList);
+		}
+		return campiagnDataList;
 	}
 
 	/**
@@ -82,8 +92,8 @@ public class ProducerUtilities {
 	 * 
 	 */
 	public List<ProductDetails> csvToJson() throws JsonGenerationException, JsonMappingException, IOException {
-		JSONArray productDataJsonArray = null;
-		String filePath = "/home/k2/Downloads/csvDump/Product_Details.csv";
+		
+		String filePath = "//home//k2//Downloads//csvDump//Product_Details.csv";
 		Pattern pattern = Pattern.compile(",");
 		List<ProductDetails> ProductDetailsList = new ArrayList<>();
 		try (BufferedReader in = new BufferedReader(new FileReader(filePath));) {
@@ -103,9 +113,7 @@ public class ProducerUtilities {
 	public static void main(String Argss[]) throws JsonGenerationException, JsonMappingException, IOException {
 
 		ProducerUtilities utilities = new ProducerUtilities();
-		List<ProductDetails> details = new ArrayList<>();
-		// details = utilities.csvToJson();
-
-		System.out.println(utilities.USER_SCHEMA);
+		List<CampiagnData> details = new ArrayList<>();
+		
 	}
 }
